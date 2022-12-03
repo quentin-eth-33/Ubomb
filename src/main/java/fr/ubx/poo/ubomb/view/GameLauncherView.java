@@ -44,9 +44,16 @@ public class GameLauncherView extends BorderPane {
         loadItem.setOnAction(e -> {
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
-                // TODO
-                System.err.println("[TODO] Not implemented");
+               Game game = null;
+                try {
+                    game = GameLauncher.load(file);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                GameEngine engine = new GameEngine(game, stage);
+                engine.start();
             }
+
         });
 
 
