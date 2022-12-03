@@ -16,16 +16,16 @@ public class Game {
     private final Player player;
 
     private final List<Monster> monsters = new LinkedList<>();
-    private final Grid grid;
+    private final Grid[] grid;
 
-    public Game(Configuration configuration, Grid grid) {
+    public Game(Configuration configuration, Grid grid[]) {
         this.configuration = configuration;
         this.grid = grid;
         player = new Player(this, configuration.playerPosition());
-        for (var valueGrid : this.grid().values()) {
+        for (var valueGrid : this.grid(1).values()) {
             if(valueGrid instanceof Monster) {
                 Monster monster = new Monster(this, ((Monster)valueGrid).getPosition());
-                this.grid().set(monster.getPosition(), monster);
+                this.grid(1).set(monster.getPosition(), monster);
                 monsters.add(monster);
             }
         }
@@ -43,7 +43,10 @@ public class Game {
         return gos;
     }
 
-    public Grid grid() {
+    public Grid grid(int index) {
+        return grid[index-1];
+    }
+    public Grid[] grids() {
         return grid;
     }
 

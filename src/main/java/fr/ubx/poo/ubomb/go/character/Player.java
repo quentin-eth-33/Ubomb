@@ -21,6 +21,7 @@ public class Player extends Character implements Movable, TakeVisitor {
 
     private boolean princessFound = false;
 
+
     public Player(Game game, Position position) {
         super(game, position);
         this.setDirection(Direction.DOWN);
@@ -59,13 +60,13 @@ public class Player extends Character implements Movable, TakeVisitor {
 
     public void requestOpen(){
         Position nextPosition = this.getDirection().nextPosition(getPosition());
-        GameObject nextObject = game.grid().get(nextPosition);
+        GameObject nextObject = game.grid(inLevel).get(nextPosition);
         if(nextObject instanceof DoorNextClosed && this.getNumberKeys() >=1)
         {
             System.out.println("Eligible");
             this.numberKeys --;
             DoorNextOpened d =new DoorNextOpened(nextPosition);
-            game.grid().set(nextPosition, d);
+            game.grid(inLevel).set(nextPosition, d);
             nextObject.setModified(true);
         }
         //openDoor = true;
@@ -76,7 +77,7 @@ public class Player extends Character implements Movable, TakeVisitor {
         // This method is called only if the move is possible, do not check again
         Position nextPos = direction.nextPosition(getPosition());
 
-        GameObject next = game.grid().get(nextPos);
+        GameObject next = game.grid(inLevel).get(nextPos);
 
         if (next instanceof Bonus bonus) {
             bonus.takenBy(this);

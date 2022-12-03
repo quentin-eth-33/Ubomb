@@ -23,7 +23,7 @@ public class Monster extends Character {
     @Override
     public void doMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
-        GameObject next = game.grid().get(nextPos);
+        GameObject next = game.grid(inLevel).get(nextPos);
 
         // Je ne sais pas si c'est fonctionnel
         if (next instanceof Player) {

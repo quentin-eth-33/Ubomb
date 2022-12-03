@@ -12,6 +12,7 @@ public abstract class Character extends GameObject{
     private int lives;
 
     private boolean moveRequested = false;
+    protected int inLevel = 1;
     public Character(Game game, Position position) {
         super(game, position);
     }
@@ -57,14 +58,14 @@ public abstract class Character extends GameObject{
         // Need to be updated ;-)
         Position nextPos = direction.nextPosition(getPosition());
 
-        GameObject next = game.grid().get(nextPos);
+        GameObject next = game.grid(inLevel).get(nextPos);
 
         if (next != null){
 
             return next.getIsAccessible();
 
         }
-        else if(nextPos.getX() < 0 ||nextPos.getY() < 0 || nextPos.getX() >= game.grid().width() || nextPos.getY() >= game.grid().height()){
+        else if(nextPos.getX() < 0 ||nextPos.getY() < 0 || nextPos.getX() >= game.grid(inLevel).width() || nextPos.getY() >= game.grid(inLevel).height()){
             return false;
         }
         else{
