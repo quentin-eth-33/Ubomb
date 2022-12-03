@@ -58,8 +58,8 @@ public final class GameEngine {
         Group root = new Group();
         layer = new Pane();
 
-        int height = game.grid().height();
-        int width = game.grid().width();
+        int height = game.grid(1).height();
+        int width = game.grid(1).width();
         int sceneWidth = width * ImageResource.size;
         int sceneHeight = height * ImageResource.size;
         Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
@@ -76,7 +76,7 @@ public final class GameEngine {
         statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
 
         // Create sprites
-        for (var decor : game.grid().values()) {
+        for (var decor : game.grid(1).values()) {
             if(!(decor instanceof Monster))
             {
                 sprites.add(SpriteFactory.create(layer, decor));
@@ -207,7 +207,7 @@ public final class GameEngine {
     public void cleanupSprites() {
         sprites.forEach(sprite -> {
             if (sprite.getGameObject().isDeleted()) {
-                game.grid().remove(sprite.getPosition());
+                game.grid(1).remove(sprite.getPosition());
                 cleanUpSprites.add(sprite);
             }
         });
