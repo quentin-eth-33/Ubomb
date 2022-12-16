@@ -12,6 +12,7 @@ public class Monster extends Character {
         super(game, position);
         this.setDirection(Direction.DOWN);
         this.setLives(1);
+        this.setSaveLastPosition(position);
     }
 
     public Monster(Position position) {
@@ -23,14 +24,11 @@ public class Monster extends Character {
     @Override
     public void doMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
+        setSaveLastPosition(this.getPosition());
         GameObject next = game.grid(inLevel).get(nextPos);
-
-        // Je ne sais pas si c'est fonctionnel
-        if (next instanceof Player) {
-            ((Player)next).setLives(((Player)next).getLives()-1);
-        }
+        game.grid(inLevel).set(nextPos, this);
+        game.grid(inLevel).remove(getPosition());
         setPosition(nextPos);
     }
-
 
 }

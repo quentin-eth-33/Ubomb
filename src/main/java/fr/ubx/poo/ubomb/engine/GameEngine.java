@@ -194,6 +194,25 @@ public final class GameEngine {
         for(Monster monster : this.GA_monsters){
             monster.update(now);
         }
+        for(Monster monster : this.GA_monsters)
+        {
+            if(this.player.getCanLoseLive() == true && monster.getPosition().getX() == this.player.getPosition().getX() && monster.getPosition().getY() == this.player.getPosition().getY())
+            {
+                this.player.setLives(this.player.getLives()-1);
+                player.setCanLoseLive(false);
+            }
+
+            // Non fonctionnel
+            else if(this.player.getCanLoseLive() == true &&
+                    monster.getPosition().getX() == player.getSaveLastPosition().getX() &&
+                    monster.getPosition().getY() == player.getSaveLastPosition().getY() &&
+                    player.getPosition().getX() == monster.getSaveLastPosition().getX() &&
+                    player.getPosition().getY() == monster.getSaveLastPosition().getY() )
+            {
+                this.player.setLives(this.player.getLives()-1);
+                player.setCanLoseLive(false);
+            }
+        }
         if (player.getLives() <= 0) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
