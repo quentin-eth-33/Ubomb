@@ -17,6 +17,7 @@ public class Level implements Grid {
 
     private final MapLevel entities;
 
+    private final List<Monster> monsters = new LinkedList<>();
 
     private final Map<Position, GameObject> elements = new HashMap<>();
 
@@ -61,7 +62,8 @@ public class Level implements Grid {
 
                     case Empty: break;
                     default:
-                        throw new RuntimeException("EntityCode " + entity.name() + " not processed");
+                        break;
+                        //throw new RuntimeException("EntityCode " + entity.name() + " not processed");
                 }
             }
     }
@@ -102,5 +104,10 @@ public class Level implements Grid {
         if (gameObject != null)
             elements.put(position, gameObject);
     }
-
+    public List<Monster> getMonsters() {
+        return this.monsters;
+    }
+    public void addMonster(Monster monster)  {
+        monsters.add(monster);
+    }
 }

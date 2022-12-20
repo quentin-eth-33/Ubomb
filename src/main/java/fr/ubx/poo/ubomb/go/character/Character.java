@@ -49,6 +49,10 @@ public abstract class Character extends GameObject{
         return lives;
     }
 
+    public int getInLevel() {
+        return inLevel;
+    }
+
     public void setLives(int lives)
     {
         this.lives = lives;

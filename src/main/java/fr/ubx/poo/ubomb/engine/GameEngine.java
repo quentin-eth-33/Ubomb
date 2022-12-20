@@ -6,6 +6,7 @@ package fr.ubx.poo.ubomb.engine;
 
 import fr.ubx.poo.ubomb.game.Direction;
 import fr.ubx.poo.ubomb.game.Game;
+import fr.ubx.poo.ubomb.game.Level;
 import fr.ubx.poo.ubomb.game.Position;
 import fr.ubx.poo.ubomb.go.character.Monster;
 import fr.ubx.poo.ubomb.go.character.Player;
@@ -37,58 +38,60 @@ public final class GameEngine {
     private final Game game;
     private final Player player;
 
-    private List<Monster> GA_monsters = new LinkedList<>();
     private final List<Sprite> sprites = new LinkedList<>();
     private final Set<Sprite> cleanUpSprites = new HashSet<>();
     private final Stage stage;
     private StatusBar statusBar;
-    private Pane layer;
+    private Pane[] layer;
     private Input input;
 
     public GameEngine(Game game, final Stage stage) {
         this.stage = stage;
         this.game = game;
         this.player = game.player();
-        this.GA_monsters = game.getMonsters();
         initialize();
         buildAndSetGameLoop();
     }
 
     private void initialize() {
-        Group root = new Group();
-        layer = new Pane();
+        layer = new Pane[game.getNbLevels()];
+        for (int i = 1; i <= game.getNbLevels() ; i++) {
+            Group root = new Group();
 
-        int height = game.grid(1).height();
-        int width = game.grid(1).width();
-        int sceneWidth = width * ImageResource.size;
-        int sceneHeight = height * ImageResource.size;
-        Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
-        scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
+            int height = game.grid(i).height();
+            int width = game.grid(i).width();
+            int sceneWidth = width * ImageResource.size;
+            int sceneHeight = height * ImageResource.size;
 
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.hide();
-        stage.show();
+            Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
+            scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
 
-        input = new Input(scene);
-        root.getChildren().add(layer);
-        statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
+            if (i==1) {
+                stage.setScene(scene);
+                stage.setResizable(false);
+                stage.sizeToScene();
+                stage.hide();
+                stage.show();
 
-        // Create sprites
-        for (var decor : game.grid(1).values()) {
-            if(!(decor instanceof Monster))
-            {
-                sprites.add(SpriteFactory.create(layer, decor));
-                decor.setModified(true);
+
             }
-        }
+            input = new Input(scene);
+            root.getChildren().add(layer[i-1]);
+            statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
 
-        sprites.add(new SpritePlayer(layer, player));
-        for(Monster monster : this.GA_monsters)
-        {
-            sprites.add(new SpriteMonster(layer, monster));
-            System.out.println("Monster: "+monster);
+            // Create sprites
+            for (var decor : game.grid(i).values()) {
+                if (!(decor instanceof Monster)) {
+                    sprites.add(SpriteFactory.create(layer[i-1], decor));
+                    decor.setModified(true);
+                }
+            }
+
+            sprites.add(new SpritePlayer(layer[i-1], player));
+            for (Monster monster : ((Level)this.game.grid(i)).getMonsters()) {
+                sprites.add(new SpriteMonster(layer[i-1], monster));
+                System.out.println("Monster: " + monster);
+            }
         }
     }
 
@@ -119,7 +122,8 @@ public final class GameEngine {
 
     private void moveMonster(){
         Direction direction;
-        for(Monster monster : this.GA_monsters){
+        for(int i =1 ; i<=this.game.getNbLevels(); i++ )
+        for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
             direction = Direction.random();
             monster.requestMove(direction);
         }
@@ -133,9 +137,9 @@ public final class GameEngine {
         tt.setToX(dst.x() * Sprite.size);
         tt.setToY(dst.y() * Sprite.size);
         tt.setOnFinished(e -> {
-            layer.getChildren().remove(explosion);
+            layer[player.getInLevel()].getChildren().remove(explosion);
         });
-        layer.getChildren().add(explosion);
+        layer[player.getInLevel()].getChildren().add(explosion);
         tt.play();
     }
 
@@ -191,7 +195,8 @@ public final class GameEngine {
 
     private void update(long now) {
         player.update(now);
-        for(Monster monster : this.GA_monsters){
+        for(int i =1 ; i<=this.game.getNbLevels(); i++ )
+        for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
             monster.update(now);
         }
         if (player.getLives() <= 0) {
@@ -207,7 +212,7 @@ public final class GameEngine {
     public void cleanupSprites() {
         sprites.forEach(sprite -> {
             if (sprite.getGameObject().isDeleted()) {
-                game.grid(1).remove(sprite.getPosition());
+                game.grid(this.player.getInLevel()).remove(sprite.getPosition()); //pas sur de player.getInlevel()
                 cleanUpSprites.add(sprite);
             }
         });

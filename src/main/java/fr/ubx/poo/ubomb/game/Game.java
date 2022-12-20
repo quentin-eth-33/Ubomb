@@ -15,18 +15,22 @@ public class Game {
     private final Configuration configuration;
     private final Player player;
 
-    private final List<Monster> monsters = new LinkedList<>();
     private final Grid[] grid;
+    private final int nbLevels;
 
     public Game(Configuration configuration, Grid grid[]) {
         this.configuration = configuration;
         this.grid = grid;
+        this.nbLevels = grid.length;
         player = new Player(this, configuration.playerPosition());
-        for (var valueGrid : this.grid(1).values()) {
-            if(valueGrid instanceof Monster) {
-                Monster monster = new Monster(this, ((Monster)valueGrid).getPosition());
-                this.grid(1).set(monster.getPosition(), monster);
-                monsters.add(monster);
+        for(int i = 1 ;i < nbLevels; i++) {
+            Level currentGrid = (Level) this.grid(i);
+            for (var valueGrid : currentGrid.values()) {
+                if (valueGrid instanceof Monster) {
+                    Monster monster = new Monster(this, ((Monster) valueGrid).getPosition());
+                    currentGrid.set(monster.getPosition(), monster);
+                    currentGrid.addMonster(monster);
+                }
             }
         }
     }
@@ -50,13 +54,12 @@ public class Game {
         return grid;
     }
 
-    public List<Monster> getMonsters() {
-        return this.monsters;
-    }
 
     public Player player() {
         return this.player;
     }
 
-
+    public int getNbLevels() {
+        return nbLevels;
+    }
 }
