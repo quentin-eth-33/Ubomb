@@ -93,13 +93,14 @@ public final class GameEngine {
                 }
             }
 
-            sprites.add(new SpritePlayer(layer[i-1], player));
+
             for (Monster monster : ((Level)this.game.grid(i)).getMonsters()) {
                 monster.setInLevel(i);
                 sprites.add(new SpriteMonster(layer[i-1], monster));
-                System.out.println("Monster: " + monster);
             }
         }
+        sprites.add(new SpritePlayer(layer[0], player));
+
     }
 
     void buildAndSetGameLoop() {
@@ -203,9 +204,12 @@ public final class GameEngine {
     private void update(long now) {
 
         for(int i =1 ; i<=this.game.getNbLevels(); i++ )
-        for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
-            monster.update(now);
+        {
+            for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
+                monster.update(now);
+            }
         }
+
         if( player.getInLevel()!= currentLevel) {
             boolean next = currentLevel < player.getInLevel();
             Position newPlayerPosition;
@@ -223,9 +227,17 @@ public final class GameEngine {
 
 
             player.setPosition(newPlayerPosition);
+            int index =0;
+            for(Sprite sprite : sprites){
+                if(sprite instanceof SpritePlayer){
+                    cleanUpSprites.add(sprite);
+                }
+                index++;
+            }
             sprites.add(new SpritePlayer(layer[currentLevel-1], player));
 
         }
+
         player.update(now);
         if (player.getLives() <= 0) {
             gameLoop.stop();
@@ -235,6 +247,7 @@ public final class GameEngine {
             gameLoop.stop();
             showMessage("Gagné!", Color.GREEN);
         }
+
     }
 
     public void cleanupSprites() {
