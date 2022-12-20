@@ -21,6 +21,9 @@ public class Level implements Grid {
 
     private final Map<Position, GameObject> elements = new HashMap<>();
 
+    private Position fromNextLevel;
+    private Position fromPreviusLevel;
+
     public Level(MapLevel entities) {
         this.entities = entities;
         this.width = entities.width();
@@ -50,14 +53,17 @@ public class Level implements Grid {
 
                     case DoorNextClosed:
                         elements.put(position, new DoorNextClosed(position));
+                        fromNextLevel = position;
                         break;
 
                     case DoorPrevOpened:
                         elements.put(position, new DoorPrevOpened(position));
+                        fromPreviusLevel = position;
                         break;
 
                     case DoorNextOpened:
                         elements.put(position, new DoorNextOpened(position));
+                        fromNextLevel = position;
                         break;
 
                     case Empty: break;
@@ -80,6 +86,14 @@ public class Level implements Grid {
 
     public GameObject get(Position position) {
         return elements.get(position);
+    }
+
+    public Position getFromNextLevel() {
+        return fromNextLevel;
+    }
+
+    public Position getFromPreviusLevel() {
+        return fromPreviusLevel;
     }
 
     @Override

@@ -56,8 +56,6 @@ public class Player extends Character implements Movable, TakeVisitor {
 
 
 
-
-
     public void requestOpen(){
         Position nextPosition = this.getDirection().nextPosition(getPosition());
         GameObject nextObject = game.grid(inLevel).get(nextPosition);
@@ -89,6 +87,10 @@ public class Player extends Character implements Movable, TakeVisitor {
 
         if( next instanceof DoorNextOpened) {
             inLevel++;
+        }
+
+        if( next instanceof DoorPrevOpened) {
+            inLevel--;
         }
         setPosition(nextPos);
     }

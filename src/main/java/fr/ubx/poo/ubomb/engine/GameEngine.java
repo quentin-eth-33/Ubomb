@@ -46,6 +46,7 @@ public final class GameEngine {
     private StatusBar statusBar;
     private Pane[] layer;
     private Input input;
+    private int currentLevel = 1;
 
     public GameEngine(Game game, final Stage stage) {
         this.stage = stage;
@@ -78,6 +79,7 @@ public final class GameEngine {
                 stage.show();
                 input = new Input(scenes[0]);
                 statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
+
             }
 
             root.getChildren().add(layer[i-1]);
@@ -198,16 +200,32 @@ public final class GameEngine {
 
 
     private void update(long now) {
-        player.update(now);
+
         for(int i =1 ; i<=this.game.getNbLevels(); i++ )
         for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
             monster.update(now);
         }
-        if(player.getInLevel()==2) {
-            stage.setScene(scenes[1]);
-            input = new Input(scenes[1]);
-        }
+        if( player.getInLevel()!= currentLevel) {
+            boolean next = currentLevel < player.getInLevel();
+            Position newPlayerPosition;
 
+            currentLevel = player.getInLevel();
+            stage.setScene(scenes[currentLevel-1]);
+            input = new Input(scenes[currentLevel-1]);
+            stage.sizeToScene();
+
+
+            if (next)
+                newPlayerPosition = new Position(((Level)game.grid(currentLevel)).getFromPreviusLevel());
+            else
+                newPlayerPosition = new Position(((Level)game.grid(currentLevel)).getFromNextLevel());
+
+
+            player.setPosition(newPlayerPosition);
+            sprites.add(new SpritePlayer(layer[currentLevel-1], player));
+
+        }
+        player.update(now);
         if (player.getLives() <= 0) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
