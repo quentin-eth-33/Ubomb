@@ -74,9 +74,10 @@ public class Player extends Character implements Movable, TakeVisitor {
         {
             System.out.println("Eligible");
             this.numberKeys --;
-            DoorNextOpened d =new DoorNextOpened(nextPosition);
+            DoorNextOpened d =new DoorNextOpened(nextPosition, false, false);
             game.grid(inLevel).set(nextPosition, d);
-            nextObject.setModified(true);
+            game.grid(inLevel).get(nextPosition).setModified(true);
+
         }
         //openDoor = true;
     }

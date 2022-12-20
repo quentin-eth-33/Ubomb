@@ -64,7 +64,7 @@ public abstract class Character extends GameObject{
         this.lives = lives;
     }
 
-    public final boolean canMove(Direction direction) {
+    public  boolean canMove(Direction direction) {
         // Need to be updated ;-)
         Position nextPos = direction.nextPosition(getPosition());
 
