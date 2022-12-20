@@ -1,5 +1,6 @@
 package fr.ubx.poo.ubomb.go.character;
 
+import fr.ubx.poo.ubomb.engine.Timer;
 import fr.ubx.poo.ubomb.game.Direction;
 import fr.ubx.poo.ubomb.game.Game;
 import fr.ubx.poo.ubomb.game.Position;
@@ -9,17 +10,30 @@ import fr.ubx.poo.ubomb.go.GameObject;
 
 public class Monster extends Character {
 
+    private Timer timerMonster;
+
     public Monster(Game game, Position position) {
         super(game, position);
         this.setDirection(Direction.DOWN);
         this.setLives(1);
         this.setSaveLastPosition(position);
+        timerMonster = new Timer(/*60/ 5*1000 */1000);
+        timerMonster.start();
     }
+
 
     public Monster(Position position) {
         super(position);
         this.setDirection(Direction.DOWN);
         this.setLives(1);
+    }
+
+    public Timer getTimerMonster(){
+        return timerMonster;
+    }
+
+    public void setTimerMonster(Timer timerMonster){
+        this.timerMonster =  timerMonster;
     }
 
     /* Ne fonctionne pas

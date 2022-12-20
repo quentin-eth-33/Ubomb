@@ -26,10 +26,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public final class GameEngine {
@@ -45,6 +42,8 @@ public final class GameEngine {
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
+
+
 
     public GameEngine(Game game, final Stage stage) {
         this.stage = stage;
@@ -91,6 +90,7 @@ public final class GameEngine {
             sprites.add(new SpriteMonster(layer, monster));
             System.out.println("Monster: "+monster);
         }
+
     }
 
     void buildAndSetGameLoop() {
@@ -104,7 +104,7 @@ public final class GameEngine {
                 createNewBombs(now);
                 checkCollision(now);
                 checkExplosions();
-                //moveMonster();
+
 
                 // Graphic update
                 cleanupSprites();
@@ -119,13 +119,23 @@ public final class GameEngine {
         // Check explosions of bombs
     }
 
-    private void moveMonster(){
+    /* Non utilisé (utilisé dans update)
+    private void moveMonster(long now){
         Direction direction;
+
         for(Monster monster : this.GA_monsters){
-            direction = Direction.random();
-            monster.requestMove(direction);
+
+            monster.getTimerMonster().update(now);
+            if(!monster.getTimerMonster().isRunning()) {
+                direction = Direction.random();
+                monster.requestMove(direction);
+                monster.setTimerMonster(new Timer(60/ 5*1000));
+                monster.getTimerMonster().start();
+            }
         }
     }
+
+     */
 
     private void animateExplosion(Position src, Position dst) {
         ImageView explosion = new ImageView(ImageResource.EXPLOSION.getImage());
@@ -156,16 +166,12 @@ public final class GameEngine {
             System.exit(0);
         } else if (input.isMoveDown()) {
             player.requestMove(Direction.DOWN);
-            moveMonster();
         } else if (input.isMoveLeft()) {
             player.requestMove(Direction.LEFT);
-            moveMonster();
         } else if (input.isMoveRight()) {
             player.requestMove(Direction.RIGHT);
-            moveMonster();
         } else if (input.isMoveUp()) {
             player.requestMove(Direction.UP);
-            moveMonster();
         } else if (input.isKey()) {
             player.requestOpen();
         }
@@ -192,13 +198,22 @@ public final class GameEngine {
 
 
     private void update(long now) {
+        Direction direction;
         player.update(now);
-        for(Monster monster : this.GA_monsters){
-            monster.update(now);
-        }
 
         for(Monster monster : this.GA_monsters)
         {
+            monster.getTimerMonster().update(now);
+            System.out.println("Valeur isRunning: "+monster.getTimerMonster().isRunning());
+            if(!monster.getTimerMonster().isRunning()) {
+                System.out.println("Bonjour les pd");
+                direction = Direction.random();
+                monster.requestMove(direction);
+                monster.setTimerMonster(new Timer(/*60/ 5*1000*/1000));
+                monster.getTimerMonster().start();
+            }
+            monster.update(now);
+
             if(this.player.getCanLoseLive() == true && monster.getPosition().getX() == this.player.getPosition().getX() && monster.getPosition().getY() == this.player.getPosition().getY())
             {
                 this.player.setLives(this.player.getLives()-1);
