@@ -86,6 +86,10 @@ public class Player extends Character implements Movable, TakeVisitor {
         {
             this.setLives(getLives()-1);
         }
+
+        if( next instanceof DoorNextOpened) {
+            inLevel++;
+        }
         setPosition(nextPos);
     }
 

@@ -41,6 +41,8 @@ public final class GameEngine {
     private final List<Sprite> sprites = new LinkedList<>();
     private final Set<Sprite> cleanUpSprites = new HashSet<>();
     private final Stage stage;
+
+    private Scene scenes[] ;
     private StatusBar statusBar;
     private Pane[] layer;
     private Input input;
@@ -55,7 +57,9 @@ public final class GameEngine {
 
     private void initialize() {
         layer = new Pane[game.getNbLevels()];
-        for (int i = 1; i <= game.getNbLevels() ; i++) {
+        scenes = new Scene[game.getNbLevels()];
+        for (int i = 1; i <= game.getNbLevels(); i++) {
+            layer[i-1] = new Pane();
             Group root = new Group();
 
             int height = game.grid(i).height();
@@ -63,19 +67,19 @@ public final class GameEngine {
             int sceneWidth = width * ImageResource.size;
             int sceneHeight = height * ImageResource.size;
 
-            Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
-            scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
+            scenes[i-1] = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
+            scenes[i-1].getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
 
             if (i==1) {
-                stage.setScene(scene);
+                stage.setScene(scenes[0]);
                 stage.setResizable(false);
                 stage.sizeToScene();
                 stage.hide();
                 stage.show();
-
+                input = new Input(scenes[0]);
 
             }
-            input = new Input(scene);
+
             root.getChildren().add(layer[i-1]);
             statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
 
@@ -199,6 +203,11 @@ public final class GameEngine {
         for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
             monster.update(now);
         }
+        if(player.getInLevel()==2) {
+            stage.setScene(scenes[1]);
+            input = new Input(scenes[1]);
+        }
+
         if (player.getLives() <= 0) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
