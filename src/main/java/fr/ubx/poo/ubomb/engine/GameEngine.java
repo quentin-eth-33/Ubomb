@@ -77,7 +77,7 @@ public final class GameEngine {
                 stage.hide();
                 stage.show();
                 input = new Input(scenes[0]);
-
+                statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
             }
 
             root.getChildren().add(layer[i-1]);
