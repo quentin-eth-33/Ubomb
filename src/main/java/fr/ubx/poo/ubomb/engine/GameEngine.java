@@ -95,6 +95,7 @@ public final class GameEngine {
 
             sprites.add(new SpritePlayer(layer[i-1], player));
             for (Monster monster : ((Level)this.game.grid(i)).getMonsters()) {
+                monster.setInLevel(i);
                 sprites.add(new SpriteMonster(layer[i-1], monster));
                 System.out.println("Monster: " + monster);
             }

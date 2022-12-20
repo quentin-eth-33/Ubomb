@@ -31,6 +31,4 @@ public class Monster extends Character {
         }
         setPosition(nextPos);
     }
-
-
 }
