@@ -9,6 +9,7 @@ import fr.ubx.poo.ubomb.game.Game;
 import fr.ubx.poo.ubomb.game.Position;
 import fr.ubx.poo.ubomb.go.character.Monster;
 import fr.ubx.poo.ubomb.go.character.Player;
+import fr.ubx.poo.ubomb.go.decor.DoorNextOpened;
 import fr.ubx.poo.ubomb.view.*;
 import javafx.animation.AnimationTimer;
 import javafx.animation.TranslateTransition;
@@ -107,6 +108,7 @@ public final class GameEngine {
 
                 // Graphic update
                 cleanupSprites();
+                addSprite();
                 render();
                 statusBar.update(game);
             }
@@ -194,6 +196,25 @@ public final class GameEngine {
         for(Monster monster : this.GA_monsters){
             monster.update(now);
         }
+
+        for(Monster monster : this.GA_monsters)
+        {
+            if(this.player.getCanLoseLive() == true && monster.getPosition().getX() == this.player.getPosition().getX() && monster.getPosition().getY() == this.player.getPosition().getY())
+            {
+                this.player.setLives(this.player.getLives()-1);
+                player.setCanLoseLive(false);
+            }
+
+            else if(this.player.getCanLoseLive() == true &&
+                    monster.getPosition().getX() == player.getSaveLastPosition().getX() &&
+                    monster.getPosition().getY() == player.getSaveLastPosition().getY() &&
+                    player.getPosition().getX() == monster.getSaveLastPosition().getX() &&
+                    player.getPosition().getY() == monster.getSaveLastPosition().getY() )
+            {
+                this.player.setLives(this.player.getLives()-1);
+                player.setCanLoseLive(false);
+            }
+        }
         if (player.getLives() <= 0) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
@@ -218,6 +239,20 @@ public final class GameEngine {
 
     private void render() {
         sprites.forEach(Sprite::render);
+    }
+
+    public void addSprite(){
+        for (var decor : game.grid(1).values()) {
+            if(decor instanceof DoorNextOpened doorNextOpened)
+            {
+                if(!(doorNextOpened.getIsAddToSprite()))
+                {
+                    sprites.add(SpriteFactory.create(layer, decor));
+                    decor.setModified(true);
+                    doorNextOpened.setIsAddToSprite(true);
+                }
+            }
+        }
     }
 
     public void start() {

@@ -11,6 +11,9 @@ public abstract class Character extends GameObject{
     private Direction direction;
     private int lives;
 
+    private Position saveLastPosition;
+
+
     private boolean moveRequested = false;
     protected int inLevel = 1;
     public Character(Game game, Position position) {
@@ -27,6 +30,13 @@ public abstract class Character extends GameObject{
             setModified(true);
         }
         moveRequested = true;
+    }
+
+    public Position getSaveLastPosition() {
+        return saveLastPosition;
+    }
+    public void setSaveLastPosition(Position position) {
+        this.saveLastPosition = position;
     }
 
     public Direction getDirection() {
@@ -54,7 +64,7 @@ public abstract class Character extends GameObject{
         this.lives = lives;
     }
 
-    public final boolean canMove(Direction direction) {
+    public  boolean canMove(Direction direction) {
         // Need to be updated ;-)
         Position nextPos = direction.nextPosition(getPosition());
 

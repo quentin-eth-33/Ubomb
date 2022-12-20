@@ -20,12 +20,15 @@ public class Player extends Character implements Movable, TakeVisitor {
     private int numberKeys =0;
 
     private boolean princessFound = false;
+    private boolean canLoseLive =true;
+
 
 
     public Player(Game game, Position position) {
         super(game, position);
         this.setDirection(Direction.DOWN);
         this.setLives(game.configuration().playerLives());
+        this.setSaveLastPosition(position);
     }
 
 
@@ -43,7 +46,13 @@ public class Player extends Character implements Movable, TakeVisitor {
     }
 
 
+    public boolean getCanLoseLive() {
+        return canLoseLive;
+    }
 
+    public void setCanLoseLive(boolean val) {
+        this.canLoseLive = val;
+    }
 
 
     public boolean getPrincessFound() {
@@ -65,9 +74,10 @@ public class Player extends Character implements Movable, TakeVisitor {
         {
             System.out.println("Eligible");
             this.numberKeys --;
-            DoorNextOpened d =new DoorNextOpened(nextPosition);
+            DoorNextOpened d =new DoorNextOpened(nextPosition, false, false);
             game.grid(inLevel).set(nextPosition, d);
-            nextObject.setModified(true);
+            game.grid(inLevel).get(nextPosition).setModified(true);
+
         }
         //openDoor = true;
     }
@@ -76,20 +86,18 @@ public class Player extends Character implements Movable, TakeVisitor {
     public void doMove(Direction direction) {
         // This method is called only if the move is possible, do not check again
         Position nextPos = direction.nextPosition(getPosition());
-
+        setSaveLastPosition(this.getPosition());
         GameObject next = game.grid(inLevel).get(nextPos);
 
         if (next instanceof Bonus bonus) {
             bonus.takenBy(this);
         }
-        else if(next instanceof Monster)
-        {
-            this.setLives(getLives()-1);
+
+        if(canLoseLive == false){
+            canLoseLive = true;
         }
         setPosition(nextPos);
     }
-
-
 
 
     @Override
