@@ -10,6 +10,7 @@ import fr.ubx.poo.ubomb.game.Level;
 import fr.ubx.poo.ubomb.game.Position;
 import fr.ubx.poo.ubomb.go.character.Monster;
 import fr.ubx.poo.ubomb.go.character.Player;
+import fr.ubx.poo.ubomb.go.decor.DoorNextOpened;
 import fr.ubx.poo.ubomb.view.*;
 import javafx.animation.AnimationTimer;
 import javafx.animation.TranslateTransition;
@@ -114,10 +115,10 @@ public final class GameEngine {
                 createNewBombs(now);
                 checkCollision(now);
                 checkExplosions();
-                //moveMonster();
 
                 // Graphic update
                 cleanupSprites();
+                addSprite();
                 render();
                 statusBar.update(game);
             }
@@ -128,14 +129,6 @@ public final class GameEngine {
         // Check explosions of bombs
     }
 
-    private void moveMonster(){
-        Direction direction;
-        for(int i =1 ; i<=this.game.getNbLevels(); i++ )
-        for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
-            direction = Direction.random();
-            monster.requestMove(direction);
-        }
-    }
 
     private void animateExplosion(Position src, Position dst) {
         ImageView explosion = new ImageView(ImageResource.EXPLOSION.getImage());
@@ -166,16 +159,12 @@ public final class GameEngine {
             System.exit(0);
         } else if (input.isMoveDown()) {
             player.requestMove(Direction.DOWN);
-            moveMonster();
         } else if (input.isMoveLeft()) {
             player.requestMove(Direction.LEFT);
-            moveMonster();
         } else if (input.isMoveRight()) {
             player.requestMove(Direction.RIGHT);
-            moveMonster();
         } else if (input.isMoveUp()) {
             player.requestMove(Direction.UP);
-            moveMonster();
         } else if (input.isKey()) {
             player.requestOpen();
         }
@@ -202,10 +191,19 @@ public final class GameEngine {
 
 
     private void update(long now) {
+        Direction direction;
 
         for(int i =1 ; i<=this.game.getNbLevels(); i++ )
         {
             for(Monster monster : ((Level)this.game.grid(i)).getMonsters()){
+                monster.getTimerMoveMonster().update(now);
+                if(!monster.getTimerMoveMonster().isRunning()) {
+                    direction = Direction.random();
+                    monster.requestMove(direction);
+                    // Il faut changer la formule du Timer
+                    monster.setTimerMoveMonster(new Timer(/*(long)Math.pow((double)1,(double)10)/monster.getMonsterVelocity())*/ (monster.getMonsterVelocity())*200));
+                    monster.getTimerMoveMonster().start();
+                }
                 monster.update(now);
             }
         }
@@ -266,6 +264,25 @@ public final class GameEngine {
         sprites.forEach(Sprite::render);
     }
 
+    public void addSprite(){
+        // A corriger
+        for(int i =1 ; i<=this.game.getNbLevels(); i++ )
+        {
+            for (var decor : game.grid(i).values()) {
+                if(decor instanceof DoorNextOpened doorNextOpened)
+                {
+                    if(!(doorNextOpened.getIsAddToSprite()))
+                    {
+                        // A corriger
+                        sprites.add(SpriteFactory.create(layer[i-1], decor));
+                        decor.setModified(true);
+                        doorNextOpened.setIsAddToSprite(true);
+                    }
+                }
+            }
+        }
+
+    }
     public void start() {
         gameLoop.start();
     }

@@ -4,6 +4,7 @@
 
 package fr.ubx.poo.ubomb.go.character;
 
+import fr.ubx.poo.ubomb.engine.Timer;
 import fr.ubx.poo.ubomb.game.Direction;
 import fr.ubx.poo.ubomb.game.Game;
 import fr.ubx.poo.ubomb.game.Position;
@@ -19,6 +20,7 @@ public class Player extends Character implements Movable, TakeVisitor {
     // Ajout
     private int numberKeys =0;
 
+
     private boolean princessFound = false;
 
 
@@ -26,6 +28,8 @@ public class Player extends Character implements Movable, TakeVisitor {
         super(game, position);
         this.setDirection(Direction.DOWN);
         this.setLives(game.configuration().playerLives());
+        setInvincibilityTime(4000);
+        setTimerInvincibilityTime(new Timer(getInvincibilityTime()));
     }
 
 
@@ -63,7 +67,7 @@ public class Player extends Character implements Movable, TakeVisitor {
         {
             System.out.println("Eligible");
             this.numberKeys --;
-            DoorNextOpened d =new DoorNextOpened(nextPosition);
+            DoorNextOpened d =new DoorNextOpened(nextPosition, false, false);
             game.grid(inLevel).set(nextPosition, d);
             nextObject.setModified(true);
         }
@@ -74,7 +78,8 @@ public class Player extends Character implements Movable, TakeVisitor {
     public void doMove(Direction direction) {
         // This method is called only if the move is possible, do not check again
         Position nextPos = direction.nextPosition(getPosition());
-
+        System.out.println("Nombre de vie: "+getLives());
+        System.out.println("----------------------");
         GameObject next = game.grid(inLevel).get(nextPos);
 
         if (next instanceof Bonus bonus) {
@@ -82,7 +87,14 @@ public class Player extends Character implements Movable, TakeVisitor {
         }
         else if(next instanceof Monster)
         {
-            this.setLives(getLives()-1);
+            if(!(getTimerInvincibilityTime().isRunning())){
+                this.setLives(getLives()-1);
+                getTimerInvincibilityTime().setRemaining(getInvincibilityTime());
+                getTimerInvincibilityTime().start();
+            }
+            else{
+                System.out.println("JE SUIS INVINCIBLE!!!");
+            }
         }
 
         if( next instanceof DoorNextOpened) {

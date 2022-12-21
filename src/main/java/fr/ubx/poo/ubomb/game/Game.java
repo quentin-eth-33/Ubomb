@@ -28,6 +28,7 @@ public class Game {
             for (var valueGrid : currentGrid.values()) {
                 if (valueGrid instanceof Monster) {
                     Monster monster = new Monster(this, ((Monster) valueGrid).getPosition());
+                    monster.setMonsterVelocity(configuration.monsterVelocity());
                     currentGrid.set(monster.getPosition(), monster);
                     currentGrid.addMonster(monster);
                 }

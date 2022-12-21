@@ -1,5 +1,6 @@
 package fr.ubx.poo.ubomb.go.character;
 
+import fr.ubx.poo.ubomb.engine.Timer;
 import fr.ubx.poo.ubomb.game.Direction;
 import fr.ubx.poo.ubomb.game.Game;
 import fr.ubx.poo.ubomb.game.Position;
@@ -11,6 +12,9 @@ public abstract class Character extends GameObject{
     private Direction direction;
     private int lives;
 
+    private int invincibilityTime;
+
+    private Timer timerInvincibilityTime;
     private boolean moveRequested = false;
     protected int inLevel = 1;
     public Character(Game game, Position position) {
@@ -31,6 +35,23 @@ public abstract class Character extends GameObject{
 
     public Direction getDirection() {
         return direction;
+    }
+
+
+
+    public void setTimerInvincibilityTime(Timer timerInvincibilityTime){
+        this.timerInvincibilityTime= timerInvincibilityTime;
+    }
+
+    public Timer getTimerInvincibilityTime(){
+        return this.timerInvincibilityTime;
+    }
+    public void setInvincibilityTime(int invincibilityTime){
+        this.invincibilityTime= invincibilityTime;
+    }
+
+    public int getInvincibilityTime(){
+        return this.invincibilityTime;
     }
     public boolean getMoveRequested() {
         return this.moveRequested;
